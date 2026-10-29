@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, status_badge, ai_badge %}
+{% block title %}Approval Queue{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Approval Queue</h1>
+<p class="text-muted">Nothing is scheduled or sent until a person approves it here.</p>
+{% for a in pending %}
+<div class="card mb-3 {{ 'border-danger' if a.status == 'failed' }}"><div class="card-body">
+  <div class="d-flex justify-content-between"><div><strong>{{ 'Calendar reminder' if a.kind == 'calendar' else 'Follow-up email' }}</strong>
+    {% if a.ai_generated %}{{ ai_badge() }}{% endif %} · <a href="{{ url_for('tasks.detail', task_id=a.task_id) }}">{{ a.task.title }}</a></div>{{ status_badge(a.status) }}</div>
+  {% if a.status == 'failed' %}<div class="alert alert-danger my-2 py-1">{{ a.result_message }}</div>{% endif %}
+  <form method="post" action="{{ url_for('approvals.approve_action', approval_id=a.id) }}" class="mt-2">{{ csrf() }}
+    {% if a.kind == 'email' %}
+      <input class="form-control mb-1" name="to" value="{{ a.data.to }}">
+      <input class="form-control mb-1" name="subject" value="{{ a.data.subject }}">
+      <textarea class="form-control mb-2" name="body" rows="6">{{ a.data.body }}</textarea>
+    {% else %}<p class="mb-2">{{ a.data.summary }} on <strong>{{ a.data.date }}</strong></p>{% endif %}
+    <button class="btn btn-success btn-sm">{{ 'Retry' if a.status == 'failed' else 'Approve' }}</button>
+    <button class="btn btn-outline-danger btn-sm" formaction="{{ url_for('approvals.reject_action', approval_id=a.id) }}">Reject</button>
+  </form>
+</div></div>
+{% else %}<div class="empty-state mb-4">Nothing waiting for approval.</div>{% endfor %}
+<h2 class="h5 mt-4">History</h2>
+<table class="table table-sm"><thead><tr><th>Action</th><th>Task</th><th>Status</th><th>Result</th></tr></thead><tbody>
+{% for a in history %}<tr><td>{{ a.kind }}</td><td>{{ a.task.title }}</td><td>{{ status_badge(a.status) }}</td><td>{{ a.result_message or '' }}</td></tr>
+{% else %}<tr><td colspan="4" class="empty-state">No decisions yet.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}About and Limits{% endblock %}
+{% block content %}
+<h1 class="h3">About FollowUp AI</h1>
+<p>FollowUp AI turns scattered audit commitments into a trackable workflow. AI proposes, a human decides, and every step leaves evidence.</p>
+<h2 class="h5 mt-4">What the AI does</h2>
+<ul><li>Reads pasted text and suggests tasks, owners and dates, each with the exact source sentence.</li>
+<li>Drafts follow-up emails, marked as AI-written.</li><li>Masks emails, phone numbers and NRIC numbers before text reaches the AI service.</li></ul>
+<h2 class="h5 mt-4">What it does not do</h2>
+<ul><li>It never sends an email or creates a calendar event without a person approving it.</li>
+<li>It never guesses a missing or vague date. Those are flagged “Needs confirmation”.</li>
+<li>It can be wrong. Always check the source evidence.</li>
+<li>It is a prototype that runs on fictional demo data, not real client data.</li>
+<li>Instructions hidden inside an email are treated as data, never as commands.</li></ul>
+{% endblock %}

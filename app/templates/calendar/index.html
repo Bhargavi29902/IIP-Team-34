@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Calendar{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Deadlines</h1>
+<table class="table"><thead><tr><th>Date</th><th>Task</th><th>Calendar status</th><th></th></tr></thead><tbody>
+{% for t in tasks %}<tr><td>{{ t.due_date.strftime('%a %d %b %Y') }}</td>
+  <td><a href="{{ url_for('tasks.detail', task_id=t.id) }}">{{ t.title }}</a></td>
+  <td>{{ 'Created: ' ~ t.calendar_event_id if t.calendar_event_id else 'Not created yet' }}</td>
+  <td>{% if t.due_date in holidays %}<span class="badge text-bg-warning">{{ holidays[t.due_date] }}</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="4" class="empty-state">No confirmed deadlines.</td></tr>{% endfor %}</tbody></table>
+<p class="small text-muted">TODO (Wow): Add to Outlook (.ics) download using the icalendar library.</p>
+{% endblock %}

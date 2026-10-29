@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% block title %}Task Inbox{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Task Inbox</h1>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Paste an email or note</h2>
+      <form method="post" id="extract-form">
+        {{ csrf() }}
+        <div class="row g-2 mb-2">
+          <div class="col-md-4"><select class="form-select" name="kind"><option value="email">Email</option><option value="note">Note</option><option value="transcript">Meeting transcript</option></select></div>
+          <div class="col-md-4"><input class="form-control" name="sender" placeholder="From (optional)"></div>
+          <div class="col-md-4"><input type="date" class="form-control" name="sent_on" value="{{ today }}" title="Date sent (used to resolve 'by Thursday')"></div>
+        </div>
+        <input class="form-control mb-2" name="subject" placeholder="Subject (optional)">
+        <textarea class="form-control mb-2" name="body" rows="9" placeholder="Paste the email text here…" required></textarea>
+        <button class="btn btn-primary" id="extract-btn">Extract tasks</button>
+        <span class="text-muted small ms-2">Personal details are masked before text reaches the AI. Nothing is sent or scheduled until you approve.</span>
+      </form>
+    </div></div>
+  </div>
+  <div class="col-lg-5">
+    <h2 class="h5">Demo inbox <span class="badge text-bg-warning">fictional</span></h2>
+    {% for m in demo %}
+    <div class="card mb-2"><div class="card-body py-2">
+      <div class="fw-semibold">{{ m.subject }}</div><div class="small text-muted text-truncate">{{ m.body }}</div>
+      <form method="post" action="{{ url_for('inbox.extract_demo', message_id=m.id) }}" class="mt-1">{{ csrf() }}
+        <button class="btn btn-outline-primary btn-sm">Extract tasks</button></form>
+    </div></div>
+    {% else %}<div class="empty-state">All demo emails processed. Managers can reset the demo in Settings.</div>{% endfor %}
+    {% if recent %}<h2 class="h6 mt-3">Recently processed</h2>
+    <ul class="list-unstyled small">{% for m in recent %}<li><a href="{{ url_for('inbox.review', message_id=m.id) }}">{{ m.subject or 'Untitled' }}</a></li>{% endfor %}</ul>{% endif %}
+  </div>
+</div>
+{% endblock %}

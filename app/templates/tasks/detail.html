@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, status_badge, task_confirm_form %}
+{% block title %}{{ task.title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <h1 class="h3">{{ task.title }}</h1>{{ status_badge(task.status) }}</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card mb-3"><div class="card-body">
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Client</dt><dd class="col-sm-9">{{ task.client.name if task.client else '—' }}</dd>
+        <dt class="col-sm-3">Owner</dt><dd class="col-sm-9">{{ task.owner_name or '—' }}</dd>
+        <dt class="col-sm-3">Due</dt><dd class="col-sm-9">{{ task.due_date or 'No date' }}</dd>
+        <dt class="col-sm-3">Why this date?</dt><dd class="col-sm-9">{{ task.due_reason or '—' }}</dd>
+        <dt class="col-sm-3">Priority</dt><dd class="col-sm-9">{{ task.priority_score }} · {{ task.priority_reason }}</dd>
+        <dt class="col-sm-3">Calendar</dt><dd class="col-sm-9">{{ task.calendar_event_id or 'Not created' }}</dd>
+        <dt class="col-sm-3">Source evidence</dt><dd class="col-sm-9"><blockquote class="evidence mb-0">“{{ task.source_quote }}”</blockquote></dd>
+      </dl>
+      {% for f in task.flag_list %}<span class="badge text-bg-warning me-1 mt-2">{{ f }}</span>{% endfor %}
+    </div></div>
+    {% if task.status == 'draft' %}<div class="card mb-3"><div class="card-body"><h2 class="h6">Edit and confirm</h2>{{ task_confirm_form(task, clients, users) }}</div></div>
+    {% elif task.status != 'done' %}
+    <div class="card mb-3"><div class="card-body"><h2 class="h6">Log a reply or completion</h2>
+      <p class="small text-muted">Reminders stop once a reply is recorded.</p>
+      <form method="post" action="{{ url_for('tasks.log_reply', task_id=task.id) }}" class="d-flex gap-2">{{ csrf() }}
+        <button class="btn btn-outline-primary btn-sm" name="kind" value="reply">Reply received</button>
+        <button class="btn btn-outline-success btn-sm" name="kind" value="done">Mark done</button></form></div></div>{% endif %}
+  </div>
+  <div class="col-lg-5"><h2 class="h6">History</h2>
+    <ul class="list-group">{% for l in logs %}<li class="list-group-item small">
+      <strong>{{ l.action }}</strong> · {{ l.user.name if l.user else 'system' }} · {{ l.created_at.strftime('%d %b %H:%M') }}
+      {% if l.detail %}<div class="text-muted">{{ l.detail }}</div>{% endif %}</li>
+    {% else %}<li class="list-group-item empty-state">No history yet.</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

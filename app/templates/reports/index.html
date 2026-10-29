@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Reports</h1>
+<p class="text-muted">Only numbers measured in this app. Nothing here is a promised figure.</p>
+<div class="row g-3">
+  {% for label, val in [('Tasks extracted', stats.tasks_total), ('Tasks confirmed', stats.tasks_confirmed),
+    ('Correction rate', (stats.correction_rate ~ '%') if stats.correction_rate is not none else 'n/a yet'),
+    ('Actions executed', stats.actions_executed), ('Actions failed (shown honestly)', stats.actions_failed),
+    ('Labelled test emails', stats.labelled_emails)] %}
+  <div class="col-6 col-md-4"><div class="card"><div class="card-body"><div class="h3 mb-0">{{ val }}</div><div class="small text-muted">{{ label }}</div></div></div></div>
+  {% endfor %}
+</div>
+<p class="small text-muted mt-3">TODO: accuracy per field (run <code>python eval/run_eval.py</code>), time per task, confidence calibration, failure drill log.</p>
+{% endblock %}

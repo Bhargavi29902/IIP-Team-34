@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}All Tasks{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">All Tasks</h1>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-4"><input class="form-control" name="q" placeholder="Search tasks" value="{{ args.get('q','') }}"></div>
+  <div class="col-md-3"><select class="form-select" name="status"><option value="">Any status</option>
+    {% for s in ['draft','open','waiting','blocked','done'] %}<option {{ 'selected' if args.get('status') == s }}>{{ s }}</option>{% endfor %}</select></div>
+  <div class="col-md-3"><select class="form-select" name="client"><option value="">Any client</option>
+    {% for c in clients %}<option value="{{ c.id }}" {{ 'selected' if args.get('client')|int == c.id }}>{{ c.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><button class="btn btn-outline-primary w-100">Filter</button></div>
+</form>
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Task</th><th>Client</th><th>Owner</th><th>Due</th><th>Status</th><th>Priority</th></tr></thead>
+  <tbody>{% for t in tasks %}<tr>
+    <td><a href="{{ url_for('tasks.detail', task_id=t.id) }}">{{ t.title }}</a>
+      {% for f in t.flag_list if 'duplicate' in f %}<span class="badge text-bg-warning">duplicate?</span>{% endfor %}</td>
+    <td>{{ t.client.name if t.client else '—' }}</td><td>{{ t.owner_name or '—' }}</td>
+    <td>{{ t.due_date or '—' }}</td><td>{{ status_badge(t.status) }}</td>
+    <td title="{{ t.priority_reason }}">{{ t.priority_score }}</td></tr>
+  {% else %}<tr><td colspan="6" class="empty-state">No tasks match.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

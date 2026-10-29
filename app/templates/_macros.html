@@ -1,0 +1,26 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+{% macro status_badge(s) %}
+  {% set c = {'draft':'secondary','open':'primary','waiting':'info','blocked':'danger','done':'success',
+              'pending':'warning','executed':'success','failed':'danger','rejected':'secondary'} %}
+  <span class="badge text-bg-{{ c.get(s, 'secondary') }}">{{ s }}</span>
+{% endmacro %}
+{% macro ai_badge() %}<span class="badge text-bg-light border" title="Written or suggested by AI">AI</span>{% endmacro %}
+{% macro task_confirm_form(task, clients, users) %}
+<form method="post" action="{{ url_for('tasks.confirm', task_id=task.id) }}" class="row g-2">
+  {{ csrf() }}
+  <div class="col-12"><label class="form-label small mb-0">Title</label>
+    <input class="form-control" name="title" value="{{ task.title }}" required></div>
+  <div class="col-md-4"><label class="form-label small mb-0">Owner</label>
+    <select class="form-select" name="owner_id"><option value="">{{ task.owner_name or 'Unassigned' }}</option>
+      {% for u in users %}<option value="{{ u.id }}" {{ 'selected' if task.owner_id == u.id }}>{{ u.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-4"><label class="form-label small mb-0">Client</label>
+    <select class="form-select" name="client_id"><option value="">None</option>
+      {% for c in clients %}<option value="{{ c.id }}" {{ 'selected' if task.client_id == c.id }}>{{ c.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-4"><label class="form-label small mb-0">Due date
+    {% if task.needs_confirmation %}<span class="text-warning-emphasis">(needs confirmation)</span>{% endif %}</label>
+    <input type="date" class="form-control {{ 'border-warning' if task.needs_confirmation }}" name="due_date" value="{{ task.due_date or '' }}">
+    <div class="form-check mt-1"><input class="form-check-input" type="checkbox" name="no_due_date" id="nd{{ task.id }}">
+      <label class="form-check-label small" for="nd{{ task.id }}">No due date</label></div></div>
+  <div class="col-12"><button class="btn btn-primary btn-sm">Confirm task</button></div>
+</form>
+{% endmacro %}

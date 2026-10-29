@@ -1,0 +1,8 @@
+:root { --brand: #0b3d5c; --accent: #0d8a8a; }
+.bg-brand { background: var(--brand); }
+.demo-banner { background: #fff3cd; color: #664d03; }
+.stat { border-width: 2px; }
+.stat:hover { box-shadow: 0 .25rem .75rem rgba(0,0,0,.12); }
+.evidence { border-left: 4px solid var(--accent); padding-left: .75rem; color: #333; }
+.source-text { white-space: pre-wrap; font-family: inherit; }
+.empty-state { color: #6c757d; padding: 1rem; text-align: center; border: 1px dashed #ced4da; border-radius: .5rem; }

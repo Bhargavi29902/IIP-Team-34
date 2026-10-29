@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Settings and Admin</h1>
+<div class="row g-4">
+  <div class="col-lg-6"><h2 class="h5">Configuration (read-only)</h2>
+    <table class="table table-sm"><tbody>
+      <tr><td>AI provider / model</td><td>{{ cfg.LLM_PROVIDER }} / {{ cfg.LLM_MODEL }}</td></tr>
+      <tr><td>Integrations mode</td><td>{{ cfg.INTEGRATIONS_MODE }}</td></tr>
+      <tr><td>Personal data masking</td><td>{{ 'on' if cfg.MASK_PERSONAL_DATA else 'off' }}</td></tr>
+      <tr><td>Prompt versions</td><td>{{ cfg.EXTRACTION_PROMPT }}, {{ cfg.DRAFT_PROMPT }}</td></tr>
+      <tr><td>Demo data retention</td><td>{{ cfg.DEMO_RETENTION_DAYS }} days</td></tr></tbody></table>
+    <form method="post" action="{{ url_for('settings.reset_demo') }}" onsubmit="return confirm('Delete everything and reload demo data?')">{{ csrf() }}
+      <button class="btn btn-outline-danger btn-sm">Reset demo</button></form>
+    <h2 class="h5 mt-4">Public holidays</h2>
+    <ul class="small">{% for h in holidays %}<li>{{ h.date }} · {{ h.name }}</li>{% endfor %}</ul>
+    <p class="small text-muted">Verify movable holidays against MOM's official list.</p>
+    <h2 class="h5 mt-4">Email templates</h2>
+    <ul class="small">{% for t in templates %}<li><strong>{{ t.service_line }}</strong>: {{ t.subject }}</li>{% endfor %}</ul></div>
+  <div class="col-lg-6"><h2 class="h5">Audit log</h2>
+    <ul class="list-group small mb-4">{% for l in audit %}<li class="list-group-item">{{ l.created_at.strftime('%d %b %H:%M') }} · {{ l.user.name if l.user else 'system' }} · <strong>{{ l.action }}</strong> {{ l.detail or '' }}</li>
+    {% else %}<li class="list-group-item empty-state">No activity yet.</li>{% endfor %}</ul>
+    <h2 class="h5">AI call log</h2>
+    <ul class="list-group small">{% for c in ai_calls %}<li class="list-group-item">{{ c.purpose }} · {{ c.prompt_version }} · {{ c.latency_ms }} ms · {{ 'ok' if c.success else 'FAILED: ' ~ c.error }}</li>
+    {% else %}<li class="list-group-item empty-state">No AI calls yet (mock mode makes none).</li>{% endfor %}</ul></div>
+</div>
+{% endblock %}

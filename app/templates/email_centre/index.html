@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, status_badge %}
+{% block title %}Email Centre{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Email Centre</h1>
+<p class="text-muted">AI drafts the follow-up. A person approves it in the Approval Queue before anything is sent.</p>
+<table class="table align-middle"><thead><tr><th>Task</th><th>Due</th><th>Draft a follow-up</th></tr></thead><tbody>
+{% for t in tasks %}<tr><td>{{ t.title }}</td><td>{{ t.due_date or '—' }}</td><td>
+  <form method="post" action="{{ url_for('email_centre.draft', task_id=t.id) }}" class="d-flex gap-2">{{ csrf() }}
+    <input class="form-control form-control-sm" name="to" placeholder="recipient@example.com" style="max-width:220px">
+    <select class="form-select form-select-sm" name="tone" style="max-width:120px">{% for tn in tones %}<option>{{ tn }}</option>{% endfor %}</select>
+    <button class="btn btn-primary btn-sm">Draft</button></form></td></tr>
+{% else %}<tr><td colspan="3" class="empty-state">Confirm a task first.</td></tr>{% endfor %}</tbody></table>
+<h2 class="h5 mt-4">Email log</h2>
+<ul class="list-group">{% for a in sent %}<li class="list-group-item small">{{ status_badge(a.status) }} {{ a.data.subject }} <span class="text-muted">{{ a.result_message or '' }}</span></li>
+{% else %}<li class="list-group-item empty-state">No emails yet.</li>{% endfor %}</ul>
+{% endblock %}

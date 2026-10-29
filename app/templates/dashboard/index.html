@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Dashboard</h1>
+<div class="row g-3 mb-4">
+  {% for label, key, color, link in [
+    ('Overdue','overdue','danger', url_for('tasks.list_tasks')),
+    ('Due in 7 days','due_soon','warning', url_for('tasks.list_tasks')),
+    ('Waiting on reply','waiting','info', url_for('tasks.list_tasks', status='waiting')),
+    ('Blocked','blocked','secondary', url_for('tasks.list_tasks', status='blocked')),
+    ('Suggestions to review','to_review','primary', url_for('tasks.list_tasks', status='draft')),
+    ('Pending approvals','pending_approvals','dark', url_for('approvals.queue'))] %}
+  <div class="col-6 col-md-4 col-xl-2"><a href="{{ link }}" class="text-decoration-none">
+    <div class="card stat border-{{ color }}"><div class="card-body">
+      <div class="display-6">{{ stats[key] }}</div><div class="small text-muted">{{ label }}</div></div></div></a></div>
+  {% endfor %}
+</div>
+<h2 class="h5">Most likely to be missed</h2>
+{% if top %}
+<ul class="list-group">{% for t in top %}
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div><a href="{{ url_for('tasks.detail', task_id=t.id) }}">{{ t.title }}</a>
+      <div class="small text-muted">{{ t.client.name if t.client else 'No client' }} · {{ t.priority_reason }}</div></div>
+    <div class="text-end">{{ status_badge(t.status) }}<div class="small">{{ t.due_date or 'no date' }}</div></div></li>
+{% endfor %}</ul>
+{% else %}<div class="empty-state">Nothing confirmed yet. <a href="{{ url_for('inbox.index') }}">Paste an email in the Task Inbox</a> to start.</div>{% endif %}
+{% endblock %}

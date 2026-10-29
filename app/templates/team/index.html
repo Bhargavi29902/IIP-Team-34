@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Team{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Team workload</h1>
+<table class="table"><thead><tr><th>Person</th><th>Open tasks</th></tr></thead><tbody>
+{% for name, n in workload %}<tr><td>{{ name }}</td><td>{{ n }}</td></tr>{% else %}<tr><td colspan="2" class="empty-state">No tasks yet.</td></tr>{% endfor %}</tbody></table>
+<p class="small text-muted">TODO (Wow): risk view, slip predictor, what-if simulator, handover mode.</p>
+{% endblock %}

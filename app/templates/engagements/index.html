@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Engagements{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Engagements</h1>
+<div class="list-group">{% for c in clients %}
+  <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{{ url_for('engagements.timeline', client_id=c.id) }}">
+    <span>{{ c.name }} <span class="badge text-bg-light border">{{ c.service_line }}</span></span><span>{{ counts.get(c.id, 0) }} tasks</span></a>
+{% endfor %}</div>
+<p class="small text-muted mt-3">TODO (Wow): PBC tracker, thread summaries per client.</p>
+{% endblock %}

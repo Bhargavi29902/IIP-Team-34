@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import task_confirm_form, status_badge, ai_badge %}
+{% block title %}Review suggestions{% endblock %}
+{% block content %}
+<h1 class="h3">Review suggested tasks {{ ai_badge() }}</h1>
+<div class="card mb-4"><div class="card-body">
+  <div class="small text-muted">{{ msg.kind }} · {{ msg.sent_at.strftime('%a %d %b %Y') if msg.sent_at }}{% if msg.is_demo %} · <span class="badge text-bg-warning">fictional demo</span>{% endif %}</div>
+  <pre class="mb-0 source-text">{{ msg.body }}</pre>
+</div></div>
+{% for t in tasks %}
+<div class="card mb-3 {{ 'border-warning' if t.needs_confirmation }}"><div class="card-body">
+  <div class="d-flex justify-content-between"><strong>Task {{ loop.index }}</strong>{{ status_badge(t.status) }}</div>
+  <blockquote class="evidence my-2"><span class="small text-muted">Source evidence:</span> “{{ t.source_quote }}”</blockquote>
+  <div class="small mb-2"><strong>Why this date?</strong> {{ t.due_reason }}
+    <span class="text-muted">· confidence {{ (t.confidence * 100)|round|int }}%</span></div>
+  {% for f in t.flag_list %}<span class="badge text-bg-warning me-1">{{ f }}</span>{% endfor %}
+  {% if t.status == 'draft' %}<div class="mt-3">{{ task_confirm_form(t, clients, users) }}</div>
+  {% else %}<div class="mt-2"><a href="{{ url_for('tasks.detail', task_id=t.id) }}">Open task</a></div>{% endif %}
+</div></div>
+{% else %}<div class="empty-state">No tasks were found in this message.</div>{% endfor %}
+{% endblock %}
