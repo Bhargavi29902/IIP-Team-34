@@ -46,6 +46,68 @@ source .venv/bin/activate
 ```bash
 python -m pip install -r requirements.txt
 ```
+### Troubleshooting: `requirements.txt` Not Found
+
+If you encounter this error when installing dependencies:
+
+```text
+ERROR: Could not open requirements file:
+[Errno 2] No such file or directory: 'requirements.txt'
+```
+
+This usually means your terminal is not inside the project directory containing `requirements.txt`.
+
+#### Step 1: Check Your Current Directory
+
+Run:
+
+```powershell
+ls
+```
+
+Look for `requirements.txt` in the directory listing.
+
+If you see another folder containing your project files instead, continue to Step 2.
+
+#### Step 2: Navigate to the Actual Project Folder
+
+Use the folder name shown in your terminal listing:
+
+```powershell
+cd <project-folder-name>
+```
+
+Replace `<project-folder-name>` with the actual folder name containing your project files. Do not type the angle brackets.
+
+For example, if your project folder is named `my-project`, run:
+
+```powershell
+cd my-project
+```
+
+#### Step 3: Verify the Location
+
+Run:
+
+```powershell
+ls
+```
+
+Confirm that `requirements.txt` appears in the output.
+
+#### Step 4: Install the Dependencies
+
+Once you are in the correct directory, run:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+**Expected result:** pip starts installing the dependencies listed in `requirements.txt`.
+
+**Note:** A notice that a newer pip version is available is informational and is not the cause of the missing-file error. You can update pip separately if needed.
+
+
 
 ### 3. Configure Environment Variables
 
@@ -76,6 +138,90 @@ flask --app run seed
 ```powershell
 flask --app run run
 ```
+Project structure
+
+IIP-Team-34/
+├── app/                  # Application code
+├── eval/                 # Evaluation resources
+├── instance/             # Flask instance data and SQLite database
+├── tests/                # Automated tests
+├── .github/              # GitHub workflows and configuration
+├── .env.example          # Example environment configuration
+├── .env                  # Local environment settings (do not commit secrets)
+├── requirements.txt      # Python dependencies
+├── run.py                # Application entry point
+├── Dockerfile            # Docker image configuration
+├── docker-compose.yml    # Docker Compose configuration
+└── README.md
+
+Troubleshooting
+
+Error: requirements.txt not found
+
+Example error:
+
+ERROR: Could not open requirements file:
+[Errno 2] No such file or directory: 'requirements.txt'
+
+Cause: The terminal is not in the directory containing requirements.txt.
+
+Fix:
+
+Run ls to view the current directory's contents.
+
+Navigate into the actual project folder containing requirements.txt and run.py.
+
+Run the installation command again:
+
+python -m pip install -r requirements.txt
+
+Error: sqlite3.OperationalError: unable to open database file
+
+Example:
+
+sqlite3.OperationalError: unable to open database file
+
+Cause: The SQLite database URL may point to an invalid or inaccessible location. The app can fail while running db.create_all() before the seed command starts.
+
+Fix:
+
+Make sure the terminal is in the directory containing run.py.
+
+Open the environment file:
+
+notepad .env
+
+Check the database setting. For the working Windows setup, use:
+
+DATABASE_URL=sqlite:///followup.db
+
+Save the file and close Notepad.
+
+Run the seed command again:
+
+python -m flask --app run seed
+
+If the error continues, inspect app/config.py to confirm how the Flask instance directory and database URL are configured.
+
+Important: Do not delete existing database files to fix this error. Check the configured path first.
+
+General debugging checklist
+
+Confirm that the virtual environment is activated.
+
+Confirm that the terminal is in the directory containing run.py.
+
+Confirm that requirements.txt is present before installing dependencies.
+
+Check .env for the correct database URL and other required settings.
+
+Read the first meaningful error in the traceback; later errors may be consequences of the initial failure.
+
+Keep secrets and local environment files out of version control.
+
+Development note
+
+Update this README whenever setup commands, environment variables, demo credentials, features, or evaluation requirements change. Keep instructions aligned with the actual code so new team members can reproduce the setup reliably.
 
 Open the application at:
 
