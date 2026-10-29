@@ -11,11 +11,19 @@ def _bool(name: str, default: str) -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _db_url() -> str:
+    url = os.getenv("DATABASE_URL", "").strip()
+    default = f"sqlite:///{BASE_DIR / 'instance' / 'followup.db'}"
+    if not url:
+        return default
+    if url.startswith("sqlite:///") and not url.startswith("sqlite:////") and ":memory:" not in url:
+        return f"sqlite:///{BASE_DIR / url[len('sqlite:///'):]}"  # relative -> project folder
+    return url
+
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", f"sqlite:///{BASE_DIR / 'instance' / 'followup.db'}"
-    )
+    SQLALCHEMY_DATABASE_URI = _db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TIMEZONE = "Asia/Singapore"
 

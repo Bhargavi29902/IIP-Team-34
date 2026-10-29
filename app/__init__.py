@@ -67,6 +67,9 @@ def create_app(config_object=Config) -> Flask:
 
     with app.app_context():
         db.create_all()
+        if not app.config.get("TESTING") and not User.query.first():
+            from .seed import seed_demo
+            seed_demo()  # first run: create the fictional demo users and emails
 
     if app.config["SCHEDULER_ENABLED"] and not app.config.get("TESTING"):
         from .services.scheduler import start_scheduler
