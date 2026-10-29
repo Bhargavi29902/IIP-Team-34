@@ -46,6 +46,68 @@ source .venv/bin/activate
 ```bash
 python -m pip install -r requirements.txt
 ```
+### Troubleshooting: `requirements.txt` Not Found
+
+If you encounter this error when installing dependencies:
+
+```text
+ERROR: Could not open requirements file:
+[Errno 2] No such file or directory: 'requirements.txt'
+```
+
+This usually means your terminal is not inside the project directory containing `requirements.txt`.
+
+#### Step 1: Check Your Current Directory
+
+Run:
+
+```powershell
+ls
+```
+
+Look for `requirements.txt` in the directory listing.
+
+If you see another folder containing your project files instead, continue to Step 2.
+
+#### Step 2: Navigate to the Actual Project Folder
+
+Use the folder name shown in your terminal listing:
+
+```powershell
+cd <project-folder-name>
+```
+
+Replace `<project-folder-name>` with the actual folder name containing your project files. Do not type the angle brackets.
+
+For example, if your project folder is named `my-project`, run:
+
+```powershell
+cd my-project
+```
+
+#### Step 3: Verify the Location
+
+Run:
+
+```powershell
+ls
+```
+
+Confirm that `requirements.txt` appears in the output.
+
+#### Step 4: Install the Dependencies
+
+Once you are in the correct directory, run:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+**Expected result:** pip starts installing the dependencies listed in `requirements.txt`.
+
+**Note:** A notice that a newer pip version is available is informational and is not the cause of the missing-file error. You can update pip separately if needed.
+
+
 
 ### 3. Configure Environment Variables
 
